@@ -27,7 +27,7 @@
 
 ## About The Project
 
-This is a personal project made with sole purpose of showcasing what I have learned for the past 3 years, 5 semesters studying Informatic Engineering field in Politeknik Negeri Malang and 1 semester spend studying software development utilizing Go at Ruanggurus's bootcamp.
+This is a personal project created to showcase the knowledge and skills I have acquired over the past three years, encompassing five semesters studying Informatics Engineering at Politeknik Negeri Malang, as well as one semester dedicated to software development using Go during Ruangguru's bootcamp.
 
 <p align="right">(<a href="#readme-top" style="color: black;">back to top</a>)</p>
 
