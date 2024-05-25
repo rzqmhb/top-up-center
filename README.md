@@ -40,8 +40,9 @@ This is a personal project created to showcase the knowledge and skills I have a
 ## Roadmap
 
 - System Design
-  - [ ] Class Diagram
-  - [ ] Use Case Diagram
+  - [x] Class Diagram
+        <img src="assets/images/class_diagram.png" alt="" height="">
+  - [ ] ~~Use Case Diagram~~ (after giving it some thought, this project only require simple some usecases, so a usecase diagram isnt needed.)
 - System Architecture
   - [ ] Designed initial system architecture incorporating Gin Gonic framework.
   - [ ] Integrated PostgreSQL as the primary database.
