@@ -20,6 +20,7 @@
             </ul>
         </li>
         <li><a href="#roadmap" style="color: black;">Roadmap</a></li>
+        <li><a href="#getting-started" style="color: black;">Getting Started</a></li>
     </ol>
 </details>
 
@@ -51,6 +52,16 @@ This is a personal project created to showcase the knowledge and skills I have a
   - [x] Setup project structure and version control using Git.
 - Documentation
   - [x] Started README.md file outlining project goals
+
+<p align="right">(<a href="#readme-top" style="color: black;">back to top</a>)</p>
+
+## Getting Started
+
+To migrate the database tables, run these commands with their corresponding parameters:
+1. Cleaning up the database, making sure the soon to be migrated tables did not exists in the database<br/> ```migrate -database postgres://postgres:<password>@<host>:<port>/<db_name>?sslmode=disable -path database/migrations down```
+<br/>
+
+2. Migrating the tables <br/> ```migrate -database postgres://postgres:<password>@<host>:<port>/<db_name>?sslmode=disable -path database/migrations up```
 
 <p align="right">(<a href="#readme-top" style="color: black;">back to top</a>)</p>
 
