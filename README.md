@@ -58,10 +58,10 @@ This is a personal project created to showcase the knowledge and skills I have a
 ## Getting Started
 
 To migrate the database tables, run these commands with their corresponding parameters:
-1. Cleaning up the database, making sure the soon to be migrated tables did not exists in the database<br/> ```migrate -database postgres://postgres:<password>@<host>:<port>/<db_name>?sslmode=disable -path database/migrations down```
+1. Cleaning up the database, making sure the soon to be migrated tables did not exists in the database<br/> ```migrate -database postgres://<user>:<password>@<host>:<port>/<db_name>?sslmode=disable -path database/migrations down```
 <br/>
 
-2. Migrating the tables <br/> ```migrate -database postgres://postgres:<password>@<host>:<port>/<db_name>?sslmode=disable -path database/migrations up```
+2. Migrating the tables <br/> ```migrate -database postgres://<user>:<password>@<host>:<port>/<db_name>?sslmode=disable -path database/migrations up```
 
 <p align="right">(<a href="#readme-top" style="color: black;">back to top</a>)</p>
 
