@@ -144,8 +144,8 @@ func (postgres *PostgresDB) FetchSessionByUsername(username string) (*models.Ses
 	return &session, nil
 }
 
-func(postgres *PostgresDB) UpdateSession(username string, token string, session *models.Session) error {
-	result := postgres.DB.Exec("UPDATE sessions SET token = ?, expiry = ? WHERE user_name = ? AND token = ?;", session.Token, session.Expiry, username, token)
+func(postgres *PostgresDB) UpdateSession(username string, session *models.Session) error {
+	result := postgres.DB.Exec("UPDATE sessions SET token = ?, expiry = ? WHERE user_name = ?;", session.Token, session.Expiry, username)
 	if result.Error != nil {
 		return result.Error
 	}

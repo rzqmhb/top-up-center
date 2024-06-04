@@ -10,7 +10,7 @@ type SessionRepository interface {
 	GetAll() (*[]models.Session, error)
 	GetByToken(token string) (*models.Session, error)
 	GetByUsername(username string) (*models.Session, error)
-	Update(username string, token string, session *models.Session) error
+	Update(username string, session *models.Session) error
 	Delete(token string) error
 }
 
@@ -38,8 +38,8 @@ func (s *sessionRepository) GetByUsername(username string) (*models.Session, err
 	return s.postgresDB.FetchSessionByUsername(username)
 }
 
-func (s *sessionRepository) Update(username string, token string, session *models.Session) error  {
-	return s.postgresDB.UpdateSession(username, token, session)
+func (s *sessionRepository) Update(username string, session *models.Session) error  {
+	return s.postgresDB.UpdateSession(username, session)
 }
 
 func (s *sessionRepository) Delete(token string) error  {
