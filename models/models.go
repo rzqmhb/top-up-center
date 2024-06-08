@@ -26,24 +26,21 @@ type Game struct {
 }
 
 type Item struct {
-	ID        int       `json:"item_id"`
-	GameID    int       `json:"item_game_id"`
-	Name      string    `json:"item_name"`
-	Price     float64   `json:"item_price"`
-	CreatedAt time.Time `json:"item_created_at"`
-	UpdatedAT time.Time `json:"item_updated_at"`
+	ID           int       `json:"item_id"`
+	GameID       int       `json:"item_game_id"`
+	VendorItemID int       `json:"item_vendor_item_id"`
+	Name         string    `json:"item_name"`
+	Price        float64   `json:"item_price"`
+	CreatedAt    time.Time `json:"item_created_at"`
+	UpdatedAT    time.Time `json:"item_updated_at"`
 }
 
 type Order struct {
-	ID     int       `json:"order_id"`
-	UserID int       `json:"order_user_id"`
-	Status string    `json:"order_status"`
-	Date   time.Time `json:"order_date"`
-}
-
-type OrderItem struct {
-	ID           int     `json:"order_item_id"`
-	OrderID      int     `json:"order_item_order_id"`
-	ItemID       int     `json:"order_item_item_id"`
-	CurrentPrice float64 `json:"order_item_current_price"`
+	ID               int       `json:"order_id"`
+	ItemID           int       `json:"order_item_id"`
+	UserID           int       `json:"order_user_id"`
+	ItemCurrentPrice float64   `json:"order_item_current_price"`
+	InGameUserID     int       `json:"order_in_game_user_id"`
+	Status           string    `json:"order_status"`
+	Date             time.Time `json:"order_date"`
 }

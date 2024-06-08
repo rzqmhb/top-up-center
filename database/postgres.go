@@ -330,6 +330,18 @@ func (postgres *PostgresDB) FetchOrderByID(id int) (*models.Order, error) {
 	return &order, nil
 }
 
+func (postgres *PostgresDB) FetchOrderByItemID(itemId int) (*models.Order, error) {
+	var order models.Order = models.Order{}
+	result := postgres.DB.Raw("SELECT * FROM order WHERE item_id = ?", itemId).Scan(&order)
+	if result.Error != nil {
+		return &order, result.Error
+	}
+	if result.RowsAffected == 0 {
+		return &order, errors.New("no data found")
+	}
+	return &order, nil
+}
+
 func (postgres *PostgresDB) FetchOrderByUserID(userId int) (*models.Order, error) {
 	var order models.Order = models.Order{}
 	result := postgres.DB.Raw("SELECT * FROM order WHERE user_id = ?", userId).Scan(&order)
@@ -355,88 +367,6 @@ func (postgres *PostgresDB) UpdateOrder(id int, order *models.Order) error {
 
 func (postgres *PostgresDB) DeleteOrder(id int) error {
 	result := postgres.DB.Delete(&models.Order{}, id)
-	if result.Error != nil {
-		return result.Error
-	}
-	if result.RowsAffected == 0 {
-		return errors.New("no data found")
-	}
-	return nil
-}
-
-//------------------------------------------------
-// DML and DQL operations to 'order_items' table
-//------------------------------------------------
-
-func (postgres *PostgresDB) StoreOrderItem(orderItem *models.OrderItem) error {
-	result := postgres.DB.Create(&orderItem)
-	if result.Error != nil {
-		return result.Error
-	}
-	return nil
-}
-
-func (postgres *PostgresDB) FetchOrderItems() (*[]models.OrderItem, error) {
-	var orderItems []models.OrderItem = []models.OrderItem{}
-	result := postgres.DB.Find(&orderItems)
-	if result.Error != nil {
-		return &orderItems, result.Error
-	}
-	if result.RowsAffected == 0 {
-		return &orderItems, errors.New("no data found")
-	}
-	return &orderItems, nil
-}
-
-func (postgres *PostgresDB) FetchOrderItemByID(id int) (*models.OrderItem, error) {
-	var orderItem models.OrderItem = models.OrderItem{}
-	result := postgres.DB.First(&orderItem, id)
-	if result.Error != nil {
-		return &orderItem, result.Error
-	}
-	if result.RowsAffected == 0 {
-		return &orderItem, errors.New("no data found")
-	}
-	return &orderItem, nil
-}
-
-func (postgres *PostgresDB) FetchOrderItemByOrderID(orderId int) (*models.OrderItem, error) {
-	var orderItem models.OrderItem = models.OrderItem{}
-	result := postgres.DB.Raw("SELECT * FROM order WHERE user_id = ?", orderId).Scan(&orderItem)
-	if result.Error != nil {
-		return &orderItem, result.Error
-	}
-	if result.RowsAffected == 0 {
-		return &orderItem, errors.New("no data found")
-	}
-	return &orderItem, nil
-}
-
-func (postgres *PostgresDB) FetchOrderItemByItemID(itemId int) (*models.OrderItem, error) {
-	var orderItem models.OrderItem = models.OrderItem{}
-	result := postgres.DB.Raw("SELECT * FROM order WHERE user_id = ?", itemId).Scan(&orderItem)
-	if result.Error != nil {
-		return &orderItem, result.Error
-	}
-	if result.RowsAffected == 0 {
-		return &orderItem, errors.New("no data found")
-	}
-	return &orderItem, nil
-}
-
-func (postgres *PostgresDB) UpdateOrderItem(id int, orderItem *models.OrderItem) error {
-	result := postgres.DB.Model(&models.OrderItem{}).Where("id = ?", id).Updates(&orderItem)
-	if result.Error != nil {
-		return result.Error
-	}
-	if result.RowsAffected == 0 {
-		return errors.New("no data found")
-	}
-	return nil
-}
-
-func (postgres *PostgresDB) DeleteOrderItem(id int) error {
-	result := postgres.DB.Delete(&models.OrderItem{}, id)
 	if result.Error != nil {
 		return result.Error
 	}
