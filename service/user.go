@@ -90,7 +90,13 @@ func (u *userService) Login(user *models.User) (string, error) {
 
 func (u *userService) Register(user *models.User) error {
 	user.CreatedAt, user.UpdatedAT = time.Now(), time.Now()
-	var err = u.userRepo.Store(user)
+	passwordInBytes, err := bcrypt.GenerateFromPassword([]byte(user.Password), 12)
+	if err != nil {
+		return fmt.Errorf("error while hashing password: %s", err)
+	}
+	user.Password = string(passwordInBytes)
+
+	err = u.userRepo.Store(user)
 	if err != nil {
 		if err == gorm.ErrDuplicatedKey {
 			return errors.New("email or username already exists")
