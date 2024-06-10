@@ -45,7 +45,7 @@ This is a personal project created to showcase the knowledge and skills I have a
         <img src="assets/images/class_diagram.png" alt="" height="">
   - [ ] ~~Use Case Diagram~~ (after giving it some thought, this project only require simple some usecases, so a usecase diagram isnt needed.)
 - System Architecture
-  - [ ] Designed initial system architecture incorporating Gin Gonic framework.
+  - [x] Designed initial system architecture incorporating Gin Gonic framework.
   - [x] Integrated PostgreSQL as the primary database.
   - [ ] Explore Redis integration for caching and session management.
 - Development Progress
