@@ -8,8 +8,9 @@ import (
 type ItemRepository interface {
 	Store(item *models.Item) error
 	GetAll() (*[]models.Item, error)
+	GetByKeywords(keywords []string) (*[]models.Item, error)
 	GetByID(id int) (*models.Item, error)
-	GetByGameID(gameId int) (*models.Item, error)
+	GetByGameID(gameId int) (*[]models.Item, error)
 	Update(id int, item *models.Item) error
 	Delete(id int) error
 }
@@ -30,11 +31,15 @@ func (i *itemRepository) GetAll() (*[]models.Item, error) {
 	return i.postgresDB.FetchItems()
 }
 
+func (i *itemRepository) GetByKeywords(keywords []string) (*[]models.Item, error) {
+	return i.postgresDB.FetchItemsByKeywordsForName(keywords)
+}
+
 func (i *itemRepository) GetByID(id int) (*models.Item, error) {
 	return i.postgresDB.FetchItemByID(id)
 }
 
-func (i *itemRepository) GetByGameID(gameId int) (*models.Item, error) {
+func (i *itemRepository) GetByGameID(gameId int) (*[]models.Item, error) {
 	return i.postgresDB.FetchItemByGameID(gameId)
 }
 

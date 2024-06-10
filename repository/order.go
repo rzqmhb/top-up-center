@@ -9,7 +9,9 @@ type OrderRepository interface {
 	Store(order *models.Order) error
 	GetAll() (*[]models.Order, error)
 	GetByID(id int) (*models.Order, error)
-	GetByUserID(userId int) (*models.Order, error)
+	GetByItemID(itemId int) (*[]models.Order, error)
+	GetByUserID(userId int) (*[]models.Order, error)
+	GetJoinedOrderByUserID(userId int) (*[]models.JoinedOrderData, error)
 	Update(id int, order *models.Order) error
 	Delete(id int) error
 }
@@ -34,8 +36,16 @@ func (o *orderRepository) GetByID(id int) (*models.Order, error) {
 	return o.postgresDB.FetchOrderByID(id)
 }
 
-func (o *orderRepository) GetByUserID(userId int) (*models.Order, error) {
+func (o *orderRepository) GetByItemID(itemId int) (*[]models.Order, error) {
+	return o.postgresDB.FetchOrderByItemID(itemId)
+}
+
+func (o *orderRepository) GetByUserID(userId int) (*[]models.Order, error) {
 	return o.postgresDB.FetchOrderByUserID(userId)
+}
+
+func (o *orderRepository) GetJoinedOrderByUserID(userId int) (*[]models.JoinedOrderData, error) {
+	return o.postgresDB.FetchJoinedOrderByUserID(userId)
 }
 
 func (o *orderRepository) Update(id int, order *models.Order) error {

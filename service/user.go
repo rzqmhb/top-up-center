@@ -14,7 +14,9 @@ import (
 
 type UserService interface {
 	Login(user *models.User) (string, error)
-	Register(user *models.User) (error)
+	Register(user *models.User) error
+	Logout(user *models.User) error
+	GetByUsername(username string) (*models.User, error)
 }
 
 type userService struct {
@@ -54,35 +56,29 @@ func (u *userService) Login(user *models.User) (string, error) {
 	
 	var expirationTime time.Time = time.Now().Add(time.Minute * 30)
 	var newClaims *models.Claims = &models.Claims{
-		Username: user.Name,
+		Username: dbUser.Name,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},
 	}
 
-	var token *jwt.Token = jwt.NewWithClaims(jwt.SigningMethodEdDSA, newClaims)
+	var token *jwt.Token = jwt.NewWithClaims(jwt.SigningMethodHS256, newClaims)
 	tokenString, err := token.SignedString(models.JWTKey)
 	if err != nil {
 		return "", fmt.Errorf("error while signing token: %s", err)
 	}
 
 	var newSession = &models.Session{
-		UserName: user.Name,
+		UserName: dbUser.Name,
 		Token: tokenString,
 		Expiry: expirationTime,
 	}
 
-	_, err = u.sessionRepo.GetByUsername(user.Name)
+	_, err = u.sessionRepo.GetByUsername(dbUser.Name)
 	if err != nil {
 		err = u.sessionRepo.Store(newSession)
-		if err != nil {
-			return "", err
-		}
 	} else {
 		err = u.sessionRepo.Update(user.Name, newSession)
-		if err != nil {
-			return "", err
-		}
 	}
 
 	return tokenString, nil
@@ -104,4 +100,20 @@ func (u *userService) Register(user *models.User) error {
 		return err
 	}
 	return nil
+}
+
+func (u *userService) Logout(user *models.User) error {
+	currentSession, err := u.sessionRepo.GetByUsername(user.Name)
+	if err != nil {
+		return err
+	}
+	err = u.sessionRepo.Delete(currentSession.Token)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (u *userService) GetByUsername(username string) (*models.User, error) {
+	return u.userRepo.GetByUsername(username)
 }

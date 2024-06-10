@@ -14,11 +14,10 @@ type PostgresDB struct {
 	DB *gorm.DB
 }
 
-// get DSN for postgres database from loaded .env file
-var dsn = os.Getenv("DSN")
-
 // connecting to postgres database using gorm with the provided credentials
 func InitDB() (*PostgresDB, error) {
+	// get DSN for postgres database from loaded .env file
+	var dsn = os.Getenv("DSN")
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, err
@@ -52,7 +51,7 @@ func (postgres *PostgresDB) FetchUsers() (*[]models.User, error) {
 
 func (postgres *PostgresDB) FetchUserByUsername(username string) (*models.User, error) {
 	var user models.User = models.User{}
-	result := postgres.DB.Raw("SELECT * FROM users WHERE name = ?", username).Scan(&user)
+	result := postgres.DB.Raw("SELECT * FROM users WHERE name = ?;", username).Scan(&user)
 	if result.Error != nil {
 		return &user, result.Error
 	}
@@ -64,7 +63,7 @@ func (postgres *PostgresDB) FetchUserByUsername(username string) (*models.User, 
 
 func (postgres *PostgresDB) FetchUserByEmail(email string) (*models.User, error) {
 	var user models.User = models.User{}
-	result := postgres.DB.Raw("SELECT * FROM users WHERE email = ?", email).Scan(&user)
+	result := postgres.DB.Raw("SELECT * FROM users WHERE email = ?;", email).Scan(&user)
 	if result.Error != nil {
 		return &user, result.Error
 	}
@@ -122,7 +121,7 @@ func (postgres *PostgresDB) FetchSessions() (*[]models.Session, error) {
 
 func (postgres *PostgresDB) FetchSessionByToken(token string) (*models.Session, error) {
 	var session models.Session = models.Session{}
-	result := postgres.DB.Raw("SELECT * FROM sessions WHERE token = ?", token).Scan(&session)
+	result := postgres.DB.Raw("SELECT * FROM sessions WHERE token = ?;", token).Scan(&session)
 	if result.Error != nil {
 		return &session, result.Error
 	}
@@ -134,7 +133,7 @@ func (postgres *PostgresDB) FetchSessionByToken(token string) (*models.Session, 
 
 func (postgres *PostgresDB) FetchSessionByUsername(username string) (*models.Session, error) {
 	var session models.Session = models.Session{}
-	result := postgres.DB.Raw("SELECT * FROM sessions WHERE user_name = ?", username).Scan(&session)
+	result := postgres.DB.Raw("SELECT * FROM sessions WHERE user_name = ?;", username).Scan(&session)
 	if result.Error != nil {
 		return &session, result.Error
 	}
@@ -248,6 +247,26 @@ func (postgres *PostgresDB) FetchItems() (*[]models.Item, error) {
 	return &items, nil
 }
 
+func (postgres *PostgresDB) FetchItemsByKeywordsForName(keywords []string) (*[]models.Item, error) {
+	var items []models.Item = []models.Item{}
+	var query string = `SELECT * FROM items WHERE `
+	for i, keyword := range keywords {
+		if i == len(keywords)-1 {
+			query += "name ILIKE '%" + keyword + "%';"
+			break
+		}
+		query += "name ILIKE '%" + keyword + "%' AND "
+	}
+	result := postgres.DB.Raw(query).Scan(&items)
+	if result.Error != nil {
+		return &items, result.Error
+	}
+	if result.RowsAffected == 0 {
+		return &items, errors.New("no data found")
+	}
+	return &items, nil
+}
+
 func (postgres *PostgresDB) FetchItemByID(id int) (*models.Item, error) {
 	var item models.Item = models.Item{}
 	result := postgres.DB.First(&item, id)
@@ -260,16 +279,16 @@ func (postgres *PostgresDB) FetchItemByID(id int) (*models.Item, error) {
 	return &item, nil
 }
 
-func (postgres *PostgresDB) FetchItemByGameID(gameId int) (*models.Item, error) {
-	var item models.Item = models.Item{}
-	result := postgres.DB.Raw("SELECT * FROM items WHERE game_id = ?", gameId).Scan(&item)
+func (postgres *PostgresDB) FetchItemByGameID(gameId int) (*[]models.Item, error) {
+	var items []models.Item = []models.Item{}
+	result := postgres.DB.Raw("SELECT * FROM items WHERE game_id = ?;", gameId).Scan(&items)
 	if result.Error != nil {
-		return &item, result.Error
+		return &items, result.Error
 	}
 	if result.RowsAffected == 0 {
-		return &item, errors.New("no data found")
+		return &items, errors.New("no data found")
 	}
-	return &item, nil
+	return &items, nil
 }
 
 func (postgres *PostgresDB) UpdateItem(id int, item *models.Item) error {
@@ -330,9 +349,9 @@ func (postgres *PostgresDB) FetchOrderByID(id int) (*models.Order, error) {
 	return &order, nil
 }
 
-func (postgres *PostgresDB) FetchOrderByItemID(itemId int) (*models.Order, error) {
-	var order models.Order = models.Order{}
-	result := postgres.DB.Raw("SELECT * FROM order WHERE item_id = ?", itemId).Scan(&order)
+func (postgres *PostgresDB) FetchOrderByItemID(itemId int) (*[]models.Order, error) {
+	var order []models.Order = []models.Order{}
+	result := postgres.DB.Raw("SELECT * FROM orders WHERE item_id = ?;", itemId).Scan(&order)
 	if result.Error != nil {
 		return &order, result.Error
 	}
@@ -342,9 +361,9 @@ func (postgres *PostgresDB) FetchOrderByItemID(itemId int) (*models.Order, error
 	return &order, nil
 }
 
-func (postgres *PostgresDB) FetchOrderByUserID(userId int) (*models.Order, error) {
-	var order models.Order = models.Order{}
-	result := postgres.DB.Raw("SELECT * FROM order WHERE user_id = ?", userId).Scan(&order)
+func (postgres *PostgresDB) FetchOrderByUserID(userId int) (*[]models.Order, error) {
+	var order []models.Order = []models.Order{}
+	result := postgres.DB.Raw("SELECT * FROM orders WHERE user_id = ?;", userId).Scan(&order)
 	if result.Error != nil {
 		return &order, result.Error
 	}
@@ -352,10 +371,27 @@ func (postgres *PostgresDB) FetchOrderByUserID(userId int) (*models.Order, error
 		return &order, errors.New("no data found")
 	}
 	return &order, nil
+}
+
+func (postgres *PostgresDB) FetchJoinedOrderByUserID(userId int) (*[]models.JoinedOrderData, error) {
+	var orders []models.JoinedOrderData = []models.JoinedOrderData{}
+	result := postgres.DB.Raw(`SELECT items.name as item_name, orders.item_current_price as item_price, orders.date, orders.status, orders.in_game_user_id 
+									FROM orders
+									JOIN items
+									ON orders.item_id = items.id
+									WHERE user_id = ?
+									ORDER BY orders.date DESC;`, userId).Scan(&orders)
+	if result.Error != nil {
+		return &orders, result.Error
+	}
+	if result.RowsAffected == 0 {
+		return &orders, errors.New("no data found")
+	}
+	return &orders, nil
 }
 
 func (postgres *PostgresDB) UpdateOrder(id int, order *models.Order) error {
-	result := postgres.DB.Model(&models.Order{}).Where("id = ?", id).Updates(&order)
+	result := postgres.DB.Model(&models.Order{}).Where("id = ?;", id).Updates(&order)
 	if result.Error != nil {
 		return result.Error
 	}
